@@ -2,6 +2,7 @@ package shell
 
 import (
 	"io"
+	"net"
 	"strings"
 
 	"golang.org/x/crypto/ssh"
@@ -34,7 +35,10 @@ func NewRemote(config RemoteConfig) (*Remote, error) {
 		address = parts[1]
 	}
 
-	clientConfig := &ssh.ClientConfig{User: user, Auth: config.Auth}
+	clientConfig := &ssh.ClientConfig{User: user, Auth: config.Auth,
+		HostKeyCallback: func(hostname string, remote net.Addr, key ssh.PublicKey) error {
+			return nil
+		}}
 	if !strings.Contains(address, ":") {
 		address += ":22"
 	}
